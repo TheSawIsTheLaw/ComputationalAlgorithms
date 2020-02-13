@@ -50,5 +50,7 @@ int main(){
 
     reverseInterpolationAlg();
 
+    fclose(tableFile);
+
     return 0;
 }
