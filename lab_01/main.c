@@ -19,7 +19,7 @@
 
 #define FILE_NAME "table.txt"
 #define ERROR 666
-#define EPS 0.000001
+#define EPS 0.1
 
 //#define DEBUG
 
@@ -218,7 +218,133 @@ int interpolationAlg(tableT *table, double findX, int polynomDegree){
     return 0;
 }
 
-int halfAlg(){
+// Алгоритм чистой воды, без предоставления всего и всея пользователю
+int interpNuPolAlg(tableT *table, double findX, int polynomDegree, double *foundY){
+    if (!table)
+        return ERROR;
+    slowSortTable(table);
+
+    if (!foundY)
+        return ERROR;
+
+    int position = -1;
+    for (int i = 0; i < table->dotsNum - 1; i++){
+        if (table->xArgs[i] - findX <= EPS && table->xArgs[i + 1] - findX >= EPS){
+            position = i;
+            break;
+        }
+    }
+
+    if (position == -1){
+        return ERROR;
+    }
+    // Выделение узлов
+    if (table->dotsNum < polynomDegree + 1)
+        return ERROR;
+
+    int disDegree = polynomDegree, leftMove = 0, rightMove = 0;
+    double *nodesXMas = calloc(polynomDegree + 1, sizeof(double));
+    double *nodesYMas = calloc(polynomDegree + 1, sizeof(double));
+    while (disDegree > 0){
+        if (position - leftMove > 0){
+            leftMove++;
+            disDegree--;
+        }
+        if (position + rightMove < table->dotsNum - 1){
+            rightMove++;
+            disDegree--;
+        }
+    }
+    for (int i = position - leftMove, curNode = 0; i <= position + rightMove; i++, curNode++){
+        nodesYMas[curNode] = table->yArgs[i];
+        nodesXMas[curNode] = table->xArgs[i];
+    }
+
+    double **difMas = calloc(polynomDegree + 2, sizeof(double *));
+    difMas[0] = nodesXMas;
+    difMas[1] = nodesYMas;
+    nodesXMas = NULL;
+    nodesYMas = NULL;
+    // Расчёт таблицы с разделёнными разностями
+    for (int i = polynomDegree, curPos = 2; i > 0; i--, curPos++){
+        difMas[curPos] = calloc(i, sizeof(double));
+        for (int j = 0; j < i; j++)
+            difMas[curPos][j] = splitDiff(difMas[curPos - 1][j], difMas[curPos - 1][j + 1],
+                                          difMas[0][j], difMas[0][j - 1 + curPos]);
+    }
+
+    for (int i = 0; i < polynomDegree + 1; i++){
+        for (int j = 0; j < polynomDegree + 2 - i; j++)
+            if (difMas[j][i] == INFINITY || difMas[j][i] == -INFINITY){
+                for (int i = 0; i < polynomDegree + 2; i++)
+                    free(difMas[i]);
+                free(difMas);
+                return ERROR;
+            }
+    }
+
+    // Расчёт полинома
+    double finalPolynom = 1, compGap = 1;
+    for (int i = 0; i < polynomDegree; i++)
+    {
+        for (int j = 0; j <= i; j++){
+            compGap *= findX - difMas[0][j];
+        }
+        compGap *= difMas[i + 2][0];
+        finalPolynom += compGap;
+        compGap = 1;
+    }
+
+    for (int i = 0; i < polynomDegree + 2; i++)
+        free(difMas[i]);
+    free(difMas);
+
+    *foundY = finalPolynom;
+
+    return 0;
+}
+
+int halfAlg(tableT *table){
+    int position = -1;
+    for (int i = 0; i < table->dotsNum - 1; i++){
+        if ((table->yArgs[i] <= 0 && table->yArgs[i + 1] >= 0) || (table->yArgs[i] >= 0 && table->yArgs[i + 1] <= 0)){
+            position = i;
+            break;
+        }
+    }
+    if (position == -1){
+        printf("К несчастью, функция не имеет корней на заданном отрезке. Завершение программы...");
+        return ERROR;
+    }
+
+    printf("Обнаружен корень на отрезке: x = %.3lf; y = %.3lf -> x = %.3lf; y = %.3lf\n\n", table->xArgs[position],
+           table->yArgs[position], table->xArgs[position + 1], table->yArgs[position + 1]);
+
+    if (!table->yArgs[position] || !table->yArgs[position + 1]){
+        printf("Решение тривиально, ответ уже дан в таблице :(\n\n");
+        return 0;
+    }
+
+    double leftSide = table->xArgs[position], rightSide = table->xArgs[position + 1];
+    double newX = (leftSide + rightSide) / 2, newY = -1, rightY = table->yArgs[position + 1],
+            leftY = table->yArgs[position];
+    // РАЗБИРАЙСЯ, ПОЧЕУМ НЕ РАБОТАЕТ
+    while (fabs(leftY) > EPS && fabs(rightY) > EPS){
+        printf("%lf ", newY);
+        interpNuPolAlg(table, newX, table->dotsNum - 1, &newY);
+        if (newY * leftY < 0){
+            leftY = newY;
+            leftSide = newX;
+        }
+        else{
+            rightY = newY;
+            rightSide = newX;
+        }
+        newX = (leftSide + rightSide) / 2;
+    }
+
+    printf("Корень, определённый методом половинного деления на отрезке, равен: %lf", newX);
+
     return 0;
 }
 
@@ -257,10 +383,15 @@ int main(){
     if (check != 1 || polynomDegree <= 0){
         return ERROR;
     }
+    check = 0;
 
-    interpolationAlg(&table, findX, polynomDegree);
+    check = interpolationAlg(&table, findX, polynomDegree);
+    if (check)
+        return ERROR;
 
-    halfAlg();
+    check = halfAlg(&table);
+    if (check)
+        return ERROR;
 
     reverseInterpolationAlg();
 
