@@ -58,3 +58,6 @@ dkms.conf
 *.files
 *.config
 *.creator*
+
+# Valgrind
+vgcore.*
