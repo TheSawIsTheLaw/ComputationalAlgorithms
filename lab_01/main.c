@@ -17,9 +17,9 @@
 #include <string.h>
 #include <math.h>
 
-#define FILE_NAME "table.txt"
+#define FILE_NAME "table3.txt"
 #define ERROR 666
-#define EPS 0.1
+#define EPS 0.01
 
 //#define DEBUG
 
@@ -119,8 +119,8 @@ int interpolationAlg(tableT *table, double findX, int polynomDegree){
 
     // Нахождение позиции значения х в исходной таблице
     int position = -1;
-    for (int i = 0; i < table->dotsNum - 1; i++){
-        if (table->xArgs[i] - findX <= EPS && table->xArgs[i + 1] - findX >= EPS){
+    for (int i = 0; i < table->dotsNum; i++){
+        if (table->xArgs[i] - findX <= 0 && table->xArgs[i + 1] - findX >= 0){
             position = i;
             break;
         }
@@ -326,29 +326,54 @@ int halfAlg(tableT *table){
     }
 
     double leftSide = table->xArgs[position], rightSide = table->xArgs[position + 1];
-    double newX = (leftSide + rightSide) / 2, newY = -1, rightY = table->yArgs[position + 1],
+    double newX, newY, rightY = table->yArgs[position + 1],
             leftY = table->yArgs[position];
-    // РАЗБИРАЙСЯ, ПОЧЕУМ НЕ РАБОТАЕТ
-    while (fabs(leftY) > EPS && fabs(rightY) > EPS){
-        printf("%lf ", newY);
-        interpNuPolAlg(table, newX, table->dotsNum - 1, &newY);
+    int helpErr = 0;
+    while (fabs(leftY) > EPS && fabs(rightY) > EPS && helpErr < 1000){
+        newX = (leftSide + rightSide) / 2;
+        interpNuPolAlg(table, newX, 2, &newY);
         if (newY * leftY < 0){
-            leftY = newY;
-            leftSide = newX;
-        }
-        else{
             rightY = newY;
             rightSide = newX;
         }
-        newX = (leftSide + rightSide) / 2;
+        else if (newY * rightY < 0){
+            leftY = newY;
+            leftSide = newX;
+        }
+        helpErr++;
     }
+
+    if (helpErr == 1000){
+        printf("Задача не разрешилась за тысячу итераций.\n");
+        return 0;
+    }
+
+    if (fabs(leftY) < EPS)
+        newX = leftSide;
+    else if (fabs(rightY) < EPS)
+        newX = rightSide;
 
     printf("Корень, определённый методом половинного деления на отрезке, равен: %lf", newX);
 
     return 0;
 }
 
-int reverseInterpolationAlg(){
+int reverseInterpolationAlg(tableT *table, int polynomDegree){
+    printf("\n\nНайдём корень обратной интерполяцией.");
+
+    double *saveargs = table->xArgs;
+    table->xArgs = table->yArgs;
+    table->yArgs = saveargs;
+    saveargs = NULL;
+
+    printf("Поменяем местами значения ординат и абсцисс...\n");
+
+    printf("И зададим искомой величиной для поиска в алгоритме, предоставленном выше, нуль:\n\n");
+
+    int check = interpolationAlg(table, 0, polynomDegree);
+    if (check)
+        return ERROR;
+
     return 0;
 }
 
@@ -393,7 +418,7 @@ int main(){
     if (check)
         return ERROR;
 
-    reverseInterpolationAlg();
+    reverseInterpolationAlg(&table, polynomDegree);
 
     freeTableT(&table);
 
