@@ -17,7 +17,7 @@
 #include <string.h>
 #include <math.h>
 
-#define FILE_NAME "table3.txt"
+#define FILE_NAME "table2.txt"
 #define ERROR 666
 #define EPS 0.01
 
@@ -343,8 +343,8 @@ int halfAlg(tableT *table){
         helpErr++;
     }
 
-    if (helpErr == 1000){
-        printf("Задача не разрешилась за тысячу итераций.\n");
+    if (helpErr == 100000){
+        printf("Задача не разрешилась за 100000 итераций.\n");
         return 0;
     }
 
