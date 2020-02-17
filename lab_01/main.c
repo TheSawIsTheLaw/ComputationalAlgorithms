@@ -17,7 +17,7 @@
 #include <string.h>
 #include <math.h>
 
-#define FILE_NAME "table2.txt"
+#define FILE_NAME "table.txt"
 #define ERROR 666
 #define EPS 0.01
 
@@ -193,8 +193,8 @@ int interpolationAlg(tableT *table, double findX, int polynomDegree){
     }
 
     // Расчёт полинома
-    double finalPolynom = 1, compGap = 1;
-    printf("Слагаемые полинома:\n1\n");
+    double finalPolynom = difMas[1][0], compGap = 1;
+    printf("Слагаемые полинома:\n%.5f\n", difMas[1][0]);
     for (int i = 0; i < polynomDegree; i++)
     {
         for (int j = 0; j <= i; j++){
@@ -284,7 +284,7 @@ int interpNuPolAlg(tableT *table, double findX, int polynomDegree, double *found
     }
 
     // Расчёт полинома
-    double finalPolynom = 1, compGap = 1;
+    double finalPolynom = difMas[1][0], compGap = 1;
     for (int i = 0; i < polynomDegree; i++)
     {
         for (int j = 0; j <= i; j++){
