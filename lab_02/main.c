@@ -134,7 +134,7 @@ void slowSortTable(tableOneDimT *table)
     }
 }
 
-int interpolationAlg(tableOneDimT *table, double findX, int polynomDegree){
+int interpolationAlg(tableOneDimT *table, double findX, int polynomDegree, double *answer){
     if (polynomDegree <= 0)
         return ERROR;
     slowSortTable(table);
@@ -239,6 +239,7 @@ int interpolationAlg(tableOneDimT *table, double findX, int polynomDegree){
     // Удивительно... Но оно работает...
 
     printf("\n\nPn(x) = %lf\n\n", finalPolynom);
+    *answer = finalPolynom;
 
     for (int i = 0; i < polynomDegree + 2; i++)
         free(difMas[i]);
@@ -247,23 +248,47 @@ int interpolationAlg(tableOneDimT *table, double findX, int polynomDegree){
     return 0;
 }
 
-/*int multiInterpolationAlg(tableT *table, double findX, double findY, polynomDegreeX, int polynomDegreeY){
+int multiInterpolationAlg(tableT *table, double findX, double findY, int polynomDegreeX, int polynomDegreeY){
     tableOneDimT curTable = { 0 };
 
     curTable.xArgs = calloc(sqrt(table->dotsNum), sizeof(double));
     curTable.yArgs = calloc(sqrt(table->dotsNum), sizeof(double));
 
     double *endMas = calloc(sqrt(table->dotsNum), sizeof(double));
+    printf("!%d!", (int)sqrt(table->dotsNum));
+    int curEnd = 0;
+    double curY = 0;
+
+    curTable.dotsNum = sqrt(table->dotsNum);
 
     for (int i = 0; i < sqrt(table->dotsNum); i++){
-        for (int j = 0; j < sqrt(table->dotsNum); j++){
-
+        for (int j = i * sqrt(table->dotsNum); j < sqrt(table->dotsNum) * (i + 1); j++){
+            *(curTable.xArgs + j - (int)sqrt(table->dotsNum) * i) = *(table->yArgs + j);
+            *(curTable.yArgs + j - (int)sqrt(table->dotsNum) * i) = *(table->zArgs + j);
         }
+        interpolationAlg(&curTable, findY, polynomDegreeY, &curY);
+        endMas[curEnd] = curY;
+        curEnd++;
     }
+
+    printf("Итоговый массив значений: ");
+    for (int i = 0; i < sqrt(table->dotsNum); i++)
+        printf("%lf", endMas[i]);
+
+    free(curTable.yArgs);
+    curTable.yArgs = endMas;
+    for (int i = 0; i < (int)sqrt(table->dotsNum); i++){
+        curTable.xArgs[i] = table->xArgs[i * (int)sqrt(table->dotsNum)];
+    }
+    interpolationAlg(&curTable, findX, polynomDegreeX, &curY);
+    printf("\n\nИтог: %lf", curY);
+
+    free(curTable.xArgs);
+    free(curTable.yArgs);
 
     return 0;
 }
-*/
+
 int main(){
     FILE *tableFile = fopen(FILE_NAME, "r");
     if (!tableFile){
@@ -296,16 +321,12 @@ int main(){
 
     check = 0;
 
-// РЕШЕНИЕ МОИХ ПРОБЕЛМ!!!
-    for (int i = 0; i < sqrt(table.dotsNum); i++){
-        printf("%lf ", *(table.xArgs + (int)(i*sqrt(table.dotsNum))));
-    }
-    /*
     check = multiInterpolationAlg(&table, findX, findY, polynomDegreeX, polynomDegreeY);
-
-    check = interpolationAlg(&table, findX, polynomDegree);
     if (check)
         return ERROR;
+    /*
+
+    check = interpolationAlg(&table, findX, polynomDegree);
 */
     freeTableT(&table);
     return 0;
