@@ -19,7 +19,7 @@
 
 #define FILE_NAME "table.txt"
 #define ERROR 666
-#define EPS 0.01
+#define EPS 1e-4
 
 //#define DEBUG
 
@@ -142,6 +142,7 @@ int interpolationAlg(tableT *table, double findX, int polynomDegree){
     int disDegree = polynomDegree, leftMove = 0, rightMove = 0;
     double *nodesXMas = calloc(polynomDegree + 1, sizeof(double));
     double *nodesYMas = calloc(polynomDegree + 1, sizeof(double));
+    position++;
     while (disDegree > 0){
         if (position - leftMove > 0){
             leftMove++;
@@ -328,8 +329,11 @@ int halfAlg(tableT *table){
     double leftSide = table->xArgs[position], rightSide = table->xArgs[position + 1];
     double newX, newY, rightY = table->yArgs[position + 1],
             leftY = table->yArgs[position];
+    newX = (leftSide + rightSide) / 2;
+    interpNuPolAlg(table, newX, 2, &newY);
     int helpErr = 0;
-    while (fabs(leftY) > EPS && fabs(rightY) > EPS && helpErr < 1000){
+    //while (fabs(leftY) > EPS && fabs(rightY) > EPS && helpErr < 1000){
+    while (fabs((leftSide - rightSide)/newX) > EPS){
         newX = (leftSide + rightSide) / 2;
         interpNuPolAlg(table, newX, 2, &newY);
         if (newY * leftY < 0){
