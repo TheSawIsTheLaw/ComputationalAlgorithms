@@ -1,17 +1,3 @@
-/*
- * Алгоритмитм и программа построения интерполяционного полинома Ньютона
- * Функциональность
- *
- * Входные данные:
- * Таблица значений y(x)
- * Значение x
- * Степень полинома
- *
- * Выходные данные:
- * Интерполяционный полином
- * Корень табличной функции, найденный методом половинного деления
- * Корень, найденный обратной интерполяцией
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,9 +5,6 @@
 
 #define FILE_NAME "table.txt"
 #define ERROR 666
-#define EPS 1e-4
-
-//#define DEBUG
 
 typedef struct{
     int dotsNum;
@@ -49,10 +32,6 @@ int readfromTable(FILE *tableFile, tableT *table){
         return ERROR;
 
     table->dotsNum = dotsNum;
-#ifdef DEBUG
-    printf("%d", table->dotsNum);
-#endif
-
     table->xArgs = calloc(dotsNum, sizeof(double));
     table->yArgs = calloc(dotsNum, sizeof(double));
     table->zArgs = calloc(dotsNum, sizeof(double));
@@ -66,11 +45,7 @@ int readfromTable(FILE *tableFile, tableT *table){
     return 0;
 }
 
-int printTableT(tableT table)
-{
-#ifdef DEBUG
-    printf("%d", table.dotsNum);
-#endif
+int printTableT(tableT table){
     printf("|--------------|--------------|--------------|\n");
     printf("|%10s    |%10s    |%10s    |", "X", "Y", "Z");
     printf("\n");
@@ -83,8 +58,7 @@ int printTableT(tableT table)
     return 0;
 }
 
-void freeTableT(tableT *table)
-{
+void freeTableT(tableT *table){
     if (!table)
         return ;
     table->dotsNum = 0;
@@ -96,12 +70,7 @@ void freeTableT(tableT *table)
         free(table->zArgs);
 }
 
-int printTableOneDimT(tableOneDimT table)
-{
-#ifdef DEBUG
-    printf("%d", table.dotsNum);
-#endif
-
+int printTableOneDimT(tableOneDimT table){
     for (int i = 0; i < table.dotsNum; i++)
         printf("|%+5lf|%+5lf|\n", *(table.xArgs + i), *(table.yArgs + i));
 
@@ -109,10 +78,6 @@ int printTableOneDimT(tableOneDimT table)
 }
 
 double splitDiff(double yi, double yj, double xi, double xj){
-#ifdef DEBUG
-    printf("\nyi=%lf yj=%lf xi=%lf xj=%lf\n", yi, yj,
-            xi, xj);
-#endif
     return (yi - yj)/(xi - xj);
 }
 
@@ -158,10 +123,6 @@ int interpolationAlg(tableOneDimT *table, double findX, int polynomDegree, doubl
         printf("К сожалению, экстраполяция запрещена.\n");
         return ERROR;
     }
-
-#ifdef DEBUG
-    printf("pos is %d\n", position);
-#endif
 
     // Выделение узлов
     if (table->dotsNum < polynomDegree + 1)
@@ -273,7 +234,8 @@ int multiInterpolationAlg(tableT *table, double findX, double findY, int polynom
 
     printf("Итоговый массив значений: ");
     for (int i = 0; i < sqrt(table->dotsNum); i++)
-        printf("%lf", endMas[i]);
+        printf("%lf ", endMas[i]);
+    printf("\n");
 
     free(curTable.yArgs);
     curTable.yArgs = endMas;
@@ -324,10 +286,7 @@ int main(){
     check = multiInterpolationAlg(&table, findX, findY, polynomDegreeX, polynomDegreeY);
     if (check)
         return ERROR;
-    /*
 
-    check = interpolationAlg(&table, findX, polynomDegree);
-*/
     freeTableT(&table);
     return 0;
 }
