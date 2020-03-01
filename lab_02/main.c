@@ -261,7 +261,7 @@ int multiInterpolationAlg(tableT *table, double findX, double findY, int polynom
 
     curTable.dotsNum = sqrt(table->dotsNum);
 
-    for (int i = 0; i < sqrt(table->dotsNum); i++){
+    for (int i = 0; i < (int)sqrt(table->dotsNum); i++){
         for (int j = i * sqrt(table->dotsNum); j < sqrt(table->dotsNum) * (i + 1); j++){
             *(curTable.xArgs + j - (int)sqrt(table->dotsNum) * i) = *(table->yArgs + j);
             *(curTable.yArgs + j - (int)sqrt(table->dotsNum) * i) = *(table->zArgs + j);
