@@ -71,13 +71,13 @@ int printTableT(tableT table)
 #ifdef DEBUG
     printf("%d", table.dotsNum);
 #endif
-    printf("|---------|---------|---------|\n");
-    printf("|%5s    |%5s    |%5s    |", "X", "Y", "Z");
+    printf("|--------------|--------------|--------------|\n");
+    printf("|%10s    |%10s    |%10s    |", "X", "Y", "Z");
     printf("\n");
-    printf("|---------|---------|---------|\n");
+    printf("|--------------|--------------|--------------|\n");
     for (int i = 0; i < table.dotsNum; i++){
-        printf("|%+5lf|%+5lf|%+5lf|\n", *(table.xArgs + i), *(table.yArgs + i), *(table.zArgs + i));
-        printf("|---------|---------|---------|\n");
+        printf("|% 14lf|% 14lf|% 14lf|\n", *(table.xArgs + i), *(table.yArgs + i), *(table.zArgs + i));
+        printf("|--------------|--------------|--------------|\n");
     }
 
     return 0;
