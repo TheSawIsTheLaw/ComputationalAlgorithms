@@ -3,7 +3,7 @@
 #include <math.h>
 
 double func(double x, double y){
-    return x * x - y * y * y;
+    return x * x + y * y;
 }
 
 int main(){
