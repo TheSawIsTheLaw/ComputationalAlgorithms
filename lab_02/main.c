@@ -72,7 +72,7 @@ void freeTableT(tableT *table){
 
 int printTableOneDimT(tableOneDimT table){
     for (int i = 0; i < table.dotsNum; i++)
-        printf("|%+5lf|%+5lf|\n", *(table.xArgs + i), *(table.yArgs + i));
+        printf("|% 15lf|% 15lf|\n", *(table.xArgs + i), *(table.yArgs + i));
 
     return 0;
 }
@@ -105,9 +105,11 @@ int interpolationAlg(tableOneDimT *table, double findX, int polynomDegree, doubl
     slowSortTable(table);
 
     printf("\nОтсортированная таблица значений будет иметь следующий вид:\n");
-    printf("|%5s    |%5s    |\n", "x", "y");
-    printf("|---------|---------|\n");
+    printf("|---------------|---------------|\n");
+    printf("|%" "7s        |%" "7s        |\n", "x", "y");
+    printf("|---------------|---------------|\n");
     printTableOneDimT(*table);
+    printf("|---------------|---------------|\n");
     printf("\n\n");
 
     // Нахождение позиции значения х в исходной таблице
