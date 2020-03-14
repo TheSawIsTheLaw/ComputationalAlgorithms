@@ -69,7 +69,7 @@ int splineAlg(tableT table, float findX){
     if (table.dotsNum <= 0)
         return ERROR;
 
-    float *coefArrC = calloc(sizeof(float), table.dotsNum + 1); // +1 Для прогонки обратно
+    float *coefArrC = calloc(sizeof(float), table.dotsNum);
     float *coefArrZetta = calloc(sizeof(float), table.dotsNum);
     float *coefArrEtta = calloc(sizeof(float), table.dotsNum);
     float *coefArrA = calloc(sizeof(float), table.dotsNum);
@@ -88,30 +88,45 @@ int splineAlg(tableT table, float findX){
     // Прямой ход
 
     printf("Коэффициенты при прямом проходе:\n\n");
-    printf("C[1] = 0\n");
 
     for (int i = 2; i < table.dotsNum; i++){
         coefArrA[i] = coefArrHn[i - 1];
-        coefArrB[i] = -2 * (coefArrHn[i - 1] + coefArrHn[i]);
+        coefArrB[i] = - 2 * (coefArrHn[i - 1] + coefArrHn[i]);
         coefArrD[i] = coefArrHn[i];
-        coefArrF[i] = -3 * (table.yArgs[i] - table.yArgs[i - 1]) / coefArrHn[i] - (table.yArgs[i - 1] - table.yArgs[i - 2])/coefArrHn[i - 1];
+        coefArrF[i] = - 3 * ((table.yArgs[i] - table.yArgs[i - 1]) / coefArrHn[i] - (table.yArgs[i - 1] - table.yArgs[i - 2]) / coefArrHn[i - 1]);
 
         coefArrZetta[i + 1] = coefArrD[i]/ (coefArrB[i] - coefArrA[i] * coefArrZetta[i]);
-        coefArrEtta[i + 1] = (coefArrA[i] * coefArrEtta[i] + coefArrF[i])/ (coefArrB[i] - coefArrA[i] * coefArrZetta[i]);
+        coefArrEtta[i + 1] = (coefArrA[i] * coefArrEtta[i] + coefArrF[i]) / (coefArrB[i] - coefArrA[i] * coefArrZetta[i]);
         printf("A[%d] = %f; B[%d] = %f; D[%d] = %f; F[%d] = %f; ζ[%d] = %f; η[%d] = %f;\n\n",
                i, coefArrA[i], i, coefArrB[i], i, coefArrD[i], i, coefArrF[i], i, coefArrZetta[i], i, coefArrEtta[i]);
     }
+    printf("ζ[%d] = %f; η[%d] = %f;\n\n",
+           table.dotsNum, coefArrZetta[table.dotsNum], table.dotsNum, coefArrEtta[table.dotsNum]);
 
     // Обратный ход, нахождение коэффициентов C
     printf("Определённые коэффициенты C:\n");
 
-    for (int i = table.dotsNum - 1; i >= 2; i--){
+    printf("C[%d] = 0\n\n", table.dotsNum);
+    printf("C[%d] = η[%d] = %f\n\n", table.dotsNum - 1, table.dotsNum, coefArrEtta[table.dotsNum]);
+    coefArrC[table.dotsNum] = coefArrEtta[table.dotsNum];
+
+    for (int i = table.dotsNum - 2; i >= 2; i--){
         coefArrC[i] = coefArrZetta[i + 1] * coefArrC[i + 1] + coefArrEtta[i + 1];
         printf("C[%d] = %f\n\n", i, coefArrC[i]);
     }
 
+    printf("C[1] = 0\n\n");
+
+    //table.yArgs[table.dotsNum - 1] = coefArrEtta[table.dotsNum - 1] / (1 - coefArrZetta[table.dotsNum - 1]);
+    printf("Найдём y:\n\n");
+
+    for (int i = table.dotsNum - 1; i >= 1; i--){
+        table.yArgs[i - 1] = coefArrZetta[i] * table.yArgs[i] + coefArrEtta[i];
+        printf("y[%d] = %f\n\n", i, table.yArgs[i]);
+    }
+
     printf("Находим коэффициенты an, bn, dn:\n");
-    for (int i = 2; i < table.dotsNum; i++){
+    for (int i = 1; i < table.dotsNum; i++){
         coefArra[i] = table.yArgs[i - 1];
         coefArrd[i] = (coefArrC[i + 1] - coefArrC[i]) / (3 * coefArrHn[i]);
         coefArrb[i] = (table.yArgs[i] - table.yArgs[i - 1]) / coefArrHn[i] - (1 / 3) * coefArrHn[i] * (coefArrC[i + 1] + 2 * coefArrC[i]);
@@ -125,10 +140,12 @@ int splineAlg(tableT table, float findX){
         if (findX > table.xArgs[i])
             found = i;
     }
-    if (!found){
-        printf("Мы не сможем ничего сделать со занчением, лежащим до второй точки :(");
-        return ERROR;
-    }
+    found++;
+
+    printf("Интервал от точки x[%d] = %f до точки x[%d] = %f\n\n", found - 1, table.xArgs[found - 1], found, table.xArgs[found]);
+
+    printf("В данной точке a = %f; b = %f; d = %f y[n] = %f, y[n - 1] = %f\n\n",
+           coefArra[found], coefArrb[found], coefArrd[found], table.yArgs[found], table.yArgs[found - 1]);
 
     float diffSqr = (findX - table.xArgs[found]) * (findX - table.xArgs[found]);
     float diffTriple = diffSqr * (findX - table.xArgs[found]);
