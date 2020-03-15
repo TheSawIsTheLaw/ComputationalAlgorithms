@@ -141,7 +141,7 @@ int splineAlg(tableT table, float findX){
 
     int found = 0;
     // Ищем x
-    for (int i = 0; i < table.dotsNum - 1; i++){
+    for (int i = 0; i < table.dotsNum; i++){
         if (findX < table.xArgs[i])
         {
             found = i;
