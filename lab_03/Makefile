@@ -8,7 +8,7 @@ gener: gener.exe
 	./gener.exe
     
 gener.exe: gener.c
-	gcc -Wall -Werror gener.c -o gener.exe
+	gcc -Wall -Werror -lm  gener.c -o gener.exe
 
 clean: 
 	rm *.exe

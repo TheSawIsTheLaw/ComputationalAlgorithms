@@ -89,16 +89,19 @@ int splineAlg(tableT table, float findX){
 
     printf("Коэффициенты при прямом проходе:\n\n");
 
+    printf("ζ[%d] = %f; η[%d] = %f;\n\n",
+           2, coefArrZetta[2], 2, coefArrEtta[2]);
     for (int i = 2; i < table.dotsNum; i++){
         coefArrA[i] = coefArrHn[i - 1];
-        coefArrB[i] = - 2 * (coefArrHn[i - 1] + coefArrHn[i]);
         coefArrD[i] = coefArrHn[i];
-        coefArrF[i] = - 3 * ((table.yArgs[i] - table.yArgs[i - 1]) / coefArrHn[i] - (table.yArgs[i - 1] - table.yArgs[i - 2]) / coefArrHn[i - 1]);
+        coefArrB[i] = (-2) * (coefArrA[i] + coefArrD[i]);
+        printf("%f %f %f\n", table.yArgs[i], table.yArgs[i - 1], table.yArgs[i - 2]);
+        coefArrF[i] = (-3) * ((table.yArgs[i] - table.yArgs[i - 1]) / coefArrHn[i] - (table.yArgs[i - 1] - table.yArgs[i - 2]) / coefArrHn[i - 1]);
 
         coefArrZetta[i + 1] = coefArrD[i]/ (coefArrB[i] - coefArrA[i] * coefArrZetta[i]);
         coefArrEtta[i + 1] = (coefArrA[i] * coefArrEtta[i] + coefArrF[i]) / (coefArrB[i] - coefArrA[i] * coefArrZetta[i]);
         printf("A[%d] = %f; B[%d] = %f; D[%d] = %f; F[%d] = %f; ζ[%d] = %f; η[%d] = %f;\n\n",
-               i, coefArrA[i], i, coefArrB[i], i, coefArrD[i], i, coefArrF[i], i, coefArrZetta[i], i, coefArrEtta[i]);
+               i, coefArrA[i], i, coefArrB[i], i, coefArrD[i], i, coefArrF[i], i + 1, coefArrZetta[i + 1], i + 1, coefArrEtta[i + 1]);
     }
     printf("ζ[%d] = %f; η[%d] = %f;\n\n",
            table.dotsNum, coefArrZetta[table.dotsNum], table.dotsNum, coefArrEtta[table.dotsNum]);
@@ -106,7 +109,7 @@ int splineAlg(tableT table, float findX){
     // Обратный ход, нахождение коэффициентов C
     printf("Определённые коэффициенты C:\n");
 
-    printf("C[%d] = 0\n\n", table.dotsNum);
+    printf("C[%d] = %f\n\n", table.dotsNum, coefArrC[table.dotsNum]);
     printf("C[%d] = η[%d] = %f\n\n", table.dotsNum - 1, table.dotsNum, coefArrEtta[table.dotsNum]);
     coefArrC[table.dotsNum] = coefArrEtta[table.dotsNum];
 
@@ -115,42 +118,47 @@ int splineAlg(tableT table, float findX){
         printf("C[%d] = %f\n\n", i, coefArrC[i]);
     }
 
-    printf("C[1] = 0\n\n");
+    printf("C[%d] = %f\n\n", 1, coefArrC[1]);
 
     //table.yArgs[table.dotsNum - 1] = coefArrEtta[table.dotsNum - 1] / (1 - coefArrZetta[table.dotsNum - 1]);
-    printf("Найдём y:\n\n");
+    //printf("Найдём y:\n\n");
 
-    for (int i = table.dotsNum - 1; i >= 1; i--){
-        table.yArgs[i - 1] = coefArrZetta[i] * table.yArgs[i] + coefArrEtta[i];
-        printf("y[%d] = %f\n\n", i, table.yArgs[i]);
-    }
+    //for (int i = table.dotsNum; i > 0; i--){
+    //    table.yArgs[i] = coefArrZetta[i] * table.yArgs[i] + coefArrEtta[i];
+    //    printf("y[%d] = %f\n\n", i, table.yArgs[i]);
+    //}
 
     printf("Находим коэффициенты an, bn, dn:\n");
-    for (int i = 1; i < table.dotsNum; i++){
+    for (int i = table.dotsNum - 1; i > 0; i--){
         coefArra[i] = table.yArgs[i - 1];
+        printf("a[%d] = %f\n", i, table.yArgs[i - 1]);
         coefArrd[i] = (coefArrC[i + 1] - coefArrC[i]) / (3 * coefArrHn[i]);
+        printf("d[%d] = (%f - %f) / (3 * %f) = %f\n", i, coefArrC[i + 1], coefArrC[i], coefArrHn[i], coefArrd[i]);
         coefArrb[i] = (table.yArgs[i] - table.yArgs[i - 1]) / coefArrHn[i] - (1 / 3) * coefArrHn[i] * (coefArrC[i + 1] + 2 * coefArrC[i]);
-        printf("a[%d] = %f; b[%d] = %f; d[%d] = %f\n\n",
-               i, coefArra[i], i, coefArrb[i], i, coefArrd[i]);
+        printf("a[%d] = %f; b[%d] = %f; d[%d] = %f; x[%d] = %f; y[%d] = %f\n\n",
+               i, coefArra[i], i, coefArrb[i], i, coefArrd[i], i, table.xArgs[i], i, table.yArgs[i]);
     }
 
     int found = 0;
     // Ищем x
     for (int i = 0; i < table.dotsNum - 1; i++){
-        if (findX > table.xArgs[i])
+        if (findX < table.xArgs[i])
+        {
             found = i;
+            break;
+        }
     }
-    found++;
 
     printf("Интервал от точки x[%d] = %f до точки x[%d] = %f\n\n", found - 1, table.xArgs[found - 1], found, table.xArgs[found]);
 
     printf("В данной точке a = %f; b = %f; d = %f y[n] = %f, y[n - 1] = %f\n\n",
            coefArra[found], coefArrb[found], coefArrd[found], table.yArgs[found], table.yArgs[found - 1]);
 
-    float diffSqr = (findX - table.xArgs[found]) * (findX - table.xArgs[found]);
-    float diffTriple = diffSqr * (findX - table.xArgs[found]);
-    float foundY = coefArra[found] + coefArrb[found + 1] * (findX - table.xArgs[found]) + coefArrC[found + 1] * diffSqr +
-            coefArrd[found + 1] * diffTriple;
+    float diff = (findX - table.xArgs[found - 1]);
+    float diffSqr = diff * diff;
+    float diffTriple = diffSqr * diff;
+    float foundY = coefArra[found] + coefArrb[found] * diff + coefArrC[found] * diffSqr +
+            coefArrd[found] * diffTriple;
 
     printf("Заданному значению x соответсвует y = %f", foundY);
 

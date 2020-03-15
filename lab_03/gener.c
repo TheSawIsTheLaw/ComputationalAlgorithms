@@ -3,7 +3,7 @@
 #include <math.h>
 
 double func(double x){
-    return x * x;
+    return sin(4 * x);
 }
 
 int main(){
@@ -12,7 +12,7 @@ int main(){
     double start, stop, step;
     scanf("%lf%lf%lf", &start, &stop, &step);
 
-    fprintf(file, "number of dots: %d\n\n", (int)((stop - start) / step));
+    fprintf(file, "number of dots: %d\n\n", (int)((stop - start) / step) + 1);
 
     for (double cur = start; cur <= stop; cur += step){
         fprintf(file, "%lf %lf\n", cur, func(cur));
