@@ -12,7 +12,7 @@ int main(){
     double start, stop, step;
     scanf("%lf%lf%lf", &start, &stop, &step);
 
-    fprintf(file, "number of dots: %d\n\n", (int)(((stop - start + 1) / step)*((stop - start + 1) / step)));
+    fprintf(file, "number of dots: %d\n\n", (int)(((stop - start + 1) / step)*((stop - start + 1) / step) + 1));
 
     for (double curX = start; curX <= stop; curX += step){
         for (double curY = start; curY <= stop; curY += step){
