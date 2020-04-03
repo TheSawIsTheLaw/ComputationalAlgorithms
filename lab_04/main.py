@@ -55,6 +55,7 @@ def makeApproximatedMasY(approxY, xCoordinates, decision):
             currentX *= xCoordinates[i]
         approxY.append(lineSum)
 
+
 def changeWeight(xCoordinates, yCoordinates, weight, degree):
     matrix = list()
     makeMatrixOfSLAE(matrix, xCoordinates, yCoordinates, weight, degree)
@@ -62,7 +63,7 @@ def changeWeight(xCoordinates, yCoordinates, weight, degree):
 
     approxY = []
     makeApproximatedMasY(approxY, xCoordinates, decision)
-    plot(xCoordinates, approxY, c = "green", label = "Аппроксимация при p = 0")
+    plot(xCoordinates, approxY, c = "green", label = "Аппроксимация при p = 1")
 
     inp = 0
     while inp != 'x':
@@ -72,7 +73,6 @@ def changeWeight(xCoordinates, yCoordinates, weight, degree):
         try:
             inp = inp.split()
             inp[0] = int(inp[0])
-            print(inp)
             inp[1] = float(inp[1])
         except Exception:
             print("Значение невозможно считать")
