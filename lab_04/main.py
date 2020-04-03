@@ -1,8 +1,43 @@
 tableName = "table.txt"
 
 
+def matrLeftX(xCoordinates, k, m, weight, N):
+    back = 0
+    for i in range(N):
+        back += weight[i] * pow(xCoordinates[i], k + m)
+    return back
+
+
+def matrRightY(xCoordinates, yCoordinates, k, weight, N):
+    back = 0
+    for i in range(N):
+        back += weight[i] * yCoordinates[i] * pow(xCoordinates[i], k)
+
+    return back
+
+
+def gaussMethod(matrix):
+    for col in range(len(matrix[0])):
+        for row in range(col + 1, len(matrix)):
+            r = [(rowValue * (-(matrix[row][col] / matrix[col][col]))) for rowValue in matrix[col]]
+            matrix[row] = [sum(pair) for pair in zip(matrix[row], r)]
+    ans = []
+    matrix.reverse()
+    for sol in range(len(matrix)):
+        if sol == 0:
+            ans.append(matrix[sol][-1] / matrix[sol][-2])
+        else:
+            inner = 0
+            for x in range(sol):
+                inner += (ans[x] * matrix[sol][-2 - x])
+            ans.append((matrix[sol][-1] - inner) / matrix[sol][-sol - 2])
+    ans.reverse()
+    return ans
+
+
 def changeWeight(a, b, c):
     print("В разработке")
+
 
 def main():
     file = open(tableName, 'r')
@@ -41,6 +76,6 @@ def main():
         except Exception:
             print("Невозможно считать заданное значение. Пожалуйста, повторите попытку")
 
-    
+
 
 main()
