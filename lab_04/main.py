@@ -1,3 +1,5 @@
+from matplotlib.pyplot import *
+
 tableName = "table.txt"
 
 
@@ -43,6 +45,16 @@ def makeMatrixOfSLAE(matrix, xCoordinates, yCoordinates, weight, degree):
             matrix[k].append(matrLeftX(xCoordinates, k, m, weight, N))
         matrix[k].append(matrRightY(xCoordinates, yCoordinates, k, weight, N))
 
+
+def makeApproximatedMasY(approxY, xCoordinates, decision):
+    for i in range(len(xCoordinates)):
+        currentX = 1
+        lineSum = 0
+        for j in range(len(decision)):
+            lineSum += decision[j] * currentX
+            currentX *= xCoordinates[i]
+        approxY.append(lineSum)
+
 def changeWeight(a, b, c):
     print("В разработке")
 
@@ -60,9 +72,9 @@ def main():
     for line in file:
         print("╠════════════════════╬════════════════════╬════════════════════╣")
         splited = line.split()
-        xCoordinates.append(int(splited[0]))
-        yCoordinates.append(int(splited[1]))
-        weight.append(int(splited[2]))
+        xCoordinates.append(float(splited[0]))
+        yCoordinates.append(float(splited[1]))
+        weight.append(float(splited[2]))
         print("║{:^20}║{:^20}║{:^20}║ #{}".format(splited[0], splited[1], splited[2], i))
         i += 1
     file.close()
@@ -88,8 +100,21 @@ def main():
     makeMatrixOfSLAE(matrix, xCoordinates, yCoordinates, weight, degree)
     print(matrix)
     decision = gaussMethod(matrix)
+    print("Полученные коэффициенты a полинома:")
     print(decision)
 
+    approxY = []
+    makeApproximatedMasY(approxY, xCoordinates, decision)
+
+    for i in range(len(xCoordinates) - 1):
+        scatter(xCoordinates[i], yCoordinates[i], c = "blue")
+    scatter(xCoordinates[len(xCoordinates) - 1], yCoordinates[len(xCoordinates) - 1], c = "blue", label = "Заданные точки функции")
+    plot(xCoordinates, approxY, c = "red", label = "Аппроксимация")
+    legend()
+    grid()
+    xlabel('x')
+    ylabel('y')
+    show()
 
 
 main()
