@@ -35,6 +35,14 @@ def gaussMethod(matrix):
     return ans
 
 
+def makeMatrixOfSLAE(matrix, xCoordinates, yCoordinates, weight, degree):
+    N = len(xCoordinates)
+    for k in range(degree + 1):
+        matrix.append([])
+        for m in range(degree + 1):
+            matrix[k].append(matrLeftX(xCoordinates, k, m, weight, N))
+        matrix[k].append(matrRightY(xCoordinates, yCoordinates, k, weight, N))
+
 def changeWeight(a, b, c):
     print("В разработке")
 
@@ -52,9 +60,9 @@ def main():
     for line in file:
         print("╠════════════════════╬════════════════════╬════════════════════╣")
         splited = line.split()
-        xCoordinates.append(splited[0])
-        yCoordinates.append(splited[1])
-        weight.append(splited[2])
+        xCoordinates.append(int(splited[0]))
+        yCoordinates.append(int(splited[1]))
+        weight.append(int(splited[2]))
         print("║{:^20}║{:^20}║{:^20}║ #{}".format(splited[0], splited[1], splited[2], i))
         i += 1
     file.close()
@@ -66,7 +74,7 @@ def main():
             choice = int(input("Ваш выбор (цифра варианта): "))
         except Exception:
             print("Невозможно считать заданное значение. Пожалуйста, повторите попытку")
-    if choice == 2:
+    if choice == 1:
         changeWeight(xCoordinates, yCoordinates, weight)
 
     degree = -1
@@ -75,6 +83,12 @@ def main():
             degree = int(input("Введите степень аппроксимирующего полинома: "))
         except Exception:
             print("Невозможно считать заданное значение. Пожалуйста, повторите попытку")
+
+    matrix = list()
+    makeMatrixOfSLAE(matrix, xCoordinates, yCoordinates, weight, degree)
+    print(matrix)
+    decision = gaussMethod(matrix)
+    print(decision)
 
 
 
