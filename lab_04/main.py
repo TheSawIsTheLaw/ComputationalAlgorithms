@@ -55,8 +55,33 @@ def makeApproximatedMasY(approxY, xCoordinates, decision):
             currentX *= xCoordinates[i]
         approxY.append(lineSum)
 
-def changeWeight(a, b, c):
-    print("В разработке")
+def changeWeight(xCoordinates, yCoordinates, weight, degree):
+    matrix = list()
+    makeMatrixOfSLAE(matrix, xCoordinates, yCoordinates, weight, degree)
+    decision = gaussMethod(matrix)
+
+    approxY = []
+    makeApproximatedMasY(approxY, xCoordinates, decision)
+    plot(xCoordinates, approxY, c = "green", label = "Аппроксимация при p = 0")
+
+    inp = 0
+    while inp != 'x':
+        inp = input("Введите последовательно номер точки и её новый вес(если желаете закончить ввод - введите 'x'):")
+        if inp == 'x':
+            return
+        try:
+            inp = inp.split()
+            inp[0] = int(inp[0])
+            print(inp)
+            inp[1] = float(inp[1])
+        except Exception:
+            print("Значение невозможно считать")
+        else:
+            if inp[0] > 0 and inp[0] < len(weight):
+                try:
+                    weight[inp[0]] = inp[1]
+                except Exception:
+                    print("Значение невозможно считать")
 
 
 def main():
@@ -79,6 +104,14 @@ def main():
         i += 1
     file.close()
     print("╚════════════════════╩════════════════════╩════════════════════╝\n(Номера в таблице предоставлены для удобного форматирования по выбранному номеру веса точки)")
+
+    degree = -1
+    while degree < 0:
+        try:
+            degree = int(input("Введите степень аппроксимирующего полинома: "))
+        except Exception:
+            print("Невозможно считать заданное значение. Пожалуйста, повторите попытку")
+
     print("Чего вы желаете?\n1. Изменить веса в таблице по номеру точки\n2. Получить результат работы программы")
     choice = 0
     while choice <= 0 or choice >= 3:
@@ -87,14 +120,7 @@ def main():
         except Exception:
             print("Невозможно считать заданное значение. Пожалуйста, повторите попытку")
     if choice == 1:
-        changeWeight(xCoordinates, yCoordinates, weight)
-
-    degree = -1
-    while degree < 0:
-        try:
-            degree = int(input("Введите степень аппроксимирующего полинома: "))
-        except Exception:
-            print("Невозможно считать заданное значение. Пожалуйста, повторите попытку")
+        changeWeight(xCoordinates, yCoordinates, weight, degree)
 
     matrix = list()
     makeMatrixOfSLAE(matrix, xCoordinates, yCoordinates, weight, degree)
@@ -109,7 +135,7 @@ def main():
     for i in range(len(xCoordinates) - 1):
         scatter(xCoordinates[i], yCoordinates[i], c = "blue")
     scatter(xCoordinates[len(xCoordinates) - 1], yCoordinates[len(xCoordinates) - 1], c = "blue", label = "Заданные точки функции")
-    plot(xCoordinates, approxY, c = "red", label = "Аппроксимация")
+    plot(xCoordinates, approxY, c = "red", label = "Аппроксимация по заданному p")
     legend()
     grid()
     xlabel('x')
