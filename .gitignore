@@ -61,3 +61,6 @@ dkms.conf
 
 # Valgrind
 vgcore.*
+
+# pyCharm
+.idea
