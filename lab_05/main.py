@@ -8,21 +8,16 @@ def legendre(deg):
     c = np.array([0]*deg + [1])
     m = legcompanion(c)
     x = eigvalsh(m)
-
     dy = legval(x, c)
     df = legval(x, legder(c))
     x -= dy/df
-
     fm = legval(x, c[1:])
     fm /= np.abs(fm).max()
     df /= np.abs(df).max()
     w = 1/(fm * df)
-
     w = (w + w[::-1])/2
     x = (x - x[::-1])/2
-
     w *= 2. / w.sum()
-
     return x, w
 
 
@@ -39,7 +34,6 @@ def Simpson(curFunction, start, end, num):
     for i in range((num - 1) // 2):
         output += curFunction(x) + 4 * curFunction(x + h) + curFunction(x + 2 * h)
         x += 2 * h
-
     output *= h / 3
     return output
 
