@@ -66,9 +66,9 @@ def twoParTag(curFunction, limits, num, integrators):
 
 
 def main():
+    parameter = int(input("Par: "))
     NSimpson = int(input("n(Simpson): "))
     MGauss = int(input("m(Gauss): "))
-    parameter = int(input("Enter parameter: "))
     output = twoParTag(toResolvation(parameter), ((0, pi / 2), (0, pi / 2)), (NSimpson, MGauss), (Simpson, Gauss))
     print(output)
 
