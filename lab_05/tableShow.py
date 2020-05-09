@@ -14,7 +14,7 @@ def showTable():
         yCoordinates.append(float(splited[1]))
     file.close()
 
-    plot(xCoordinates, yCoordinates, c = "red", label = "Epsilon(Tau)")
+    plot(xCoordinates, yCoordinates, c = "purple", label = "Epsilon(Tau)")
     legend()
     grid()
     xlabel('Epsilon')
