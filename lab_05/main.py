@@ -1,50 +1,76 @@
+import numpy as np
 from numpy.polynomial.legendre import *
-from math import pi, cos, sin, exp
-
-def fillTableFromFile():
-    file = open("table.txt", 'r')
-    xCoordinates = list()
-    yCoordinates = list()
-    for line in file:
-        splited = line.split()
-        xCoordinates.append(float(splited[0]))
-        yCoordinates.append(float(splited[1]))
-    file.close()
-    return xCoordinates, yCoordinates
+from numpy.linalg import eigvalsh
+from math import cos, sin, exp, pi
 
 
-def func(x, y):
-    return (1 - exp(- 2 * cos(x) / (1 - sin(x) * sin(x) * cos(y) * cos(y)))) * cos(x) * sin(x)
+def legendre(deg):
+    c = np.array([0]*deg + [1])
+    m = legcompanion(c)
+    x = eigvalsh(m)
+
+    dy = legval(x, c)
+    df = legval(x, legder(c))
+    x -= dy/df
+
+    fm = legval(x, c[1:])
+    fm /= np.abs(fm).max()
+    df /= np.abs(df).max()
+    w = 1/(fm * df)
+
+    w = (w + w[::-1])/2
+    x = (x - x[::-1])/2
+
+    w *= 2. / w.sum()
+
+    return x, w
+
+
+def toResolvation(parameter):
+    subcurFunction = lambda x, y: 2 * cos(x) / (1 - (sin(x) ** 2) * (cos(y) ** 2))
+    curFunction = lambda x, y: (4 / pi) * (1 - exp(-parameter * subcurFunction(x, y))) * cos(x) * sin(x)
+    return curFunction
+
+
+def Simpson(curFunction, start, end, num):
+    h = (end - start) / (num - 1)
+    x = start
+    output = 0
+    for i in range((num - 1) // 2):
+        output += curFunction(x) + 4 * curFunction(x + h) + curFunction(x + 2 * h)
+        x += 2 * h
+
+    output *= h / 3
+    return output
+
+
+def toSingleTemp(twoParSolvation, imput):
+    return lambda x: twoParSolvation(imput, x)
+
+
+def TempToX(parT, start, end):
+    return (end + start) / 2 + (end - start) * parT / 2
+
+
+def Gauss(curFunction, end, start, num):
+    legArr = legendre(num)
+    output = 0
+    for i in range(num):
+        output += (start - end) / 2 * legArr[1][i] * curFunction(TempToX(legArr[0][i], start, end))
+    return output
+
+
+def twoParTag(curFunction, limits, num, integrators):
+    interior = lambda x: integrators[1](toSingleTemp(curFunction, x), limits[1][0], limits[1][1], num[1])
+    return integrators[0](interior, limits[0][0], limits[0][1], num[0])
 
 
 def main():
-    nNet = int(input("Set number N in netDif: "))
-    mNet = int(input("Set number M in netDif: "))
-
-    yStep = (pi/2) / mNet
-
-    table = fillTableFromFile()
-
-    legArr = leggauss(mNet)
-    print("Legendre roots of polynom " + str(mNet) + " degree: ", end = ' ')
-    for i in legArr[0]:
-        print(i, end=' ')
-    print()
-    print("A for Gauss: ", end = ' ')
-    for i in legArr[1]:
-        print(i, end = ' ')
-
-    summary = 0
-    for i in range(nNet):
-        tempSum = 0
-        for j in range(int(mNet / 2)):
-            tempSum += func(legArr[0][2 * j], table[1][table[0].index(legArr[1][2 * j])])
-            tempSum += 4 * func(legArr[0][2 * j + 1], table[1][table[0].index(legArr[1][2 * j + 1])])
-            tempSum += func(legArr[0][2 * j + 2], table[1][table[0].index(legArr[1][2 * j + 2])])
-        summary += tempSum * legArr[1][i] * (yStep / 3)
-
-    print(summary)
-
+    NSimpson = int(input("n(Simpson): "))
+    MGauss = int(input("m(Gauss): "))
+    parameter = int(input("Enter parameter: "))
+    output = twoParTag(toResolvation(parameter), ((0, pi / 2), (0, pi / 2)), (NSimpson, MGauss), (Simpson, Gauss))
+    print(output)
 
 
 main()
