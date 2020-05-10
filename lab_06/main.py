@@ -59,6 +59,7 @@ def rungeDerivativeRight(yValues):
 
 def main():
     yValues = table[1]
+    xValues = table[0]
 
     firstColumn = leftSideDerivative(yValues)
     print("LeftSideDerivative:", firstColumn)
