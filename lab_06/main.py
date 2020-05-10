@@ -2,7 +2,7 @@ table = [[1, 2, 3, 4, 5, 6], [0.571, 0.889, 1.091, 1.231, 1.333, 1.412]]
 # Абажаю хардкод)))))
 
 
-def leftSideDerivative(yValues, xValues):
+def leftSideDerivative(yValues):
     answer = ['-', ]
 
     for i in range(1, len(yValues)):
@@ -11,7 +11,7 @@ def leftSideDerivative(yValues, xValues):
     return answer
 
 
-def centerDerivative(yValues, xValues):
+def centerDerivative(yValues):
     answer = ['-']
 
     for i in range(1, len(yValues) - 1):
@@ -21,7 +21,7 @@ def centerDerivative(yValues, xValues):
     return answer
 
 
-def diffSecondDerivative(yValues, xValues):
+def diffSecondDerivative(yValues):
     answer = ['-']
 
     for i in range(1, len(yValues) - 1):
@@ -35,16 +35,16 @@ def main():
     yValues = table[1]
     xValues = table[0]
 
-    firstColumn = leftSideDerivative(yValues, xValues)
+    firstColumn = leftSideDerivative(yValues)
     print("LeftSideDerivative:", firstColumn)
 
-    secondColumn = centerDerivative(yValues, xValues)
+    secondColumn = centerDerivative(yValues)
     print("CenterDerivative:", secondColumn)
 
     print()
     print()
 
-    fifthColumn = diffSecondDerivative(yValues, xValues)
+    fifthColumn = diffSecondDerivative(yValues)
     print("DiffSecondDerivative:", fifthColumn)
 
 
