@@ -21,10 +21,12 @@ def legendre(deg):
     return x, w
 
 
-def toResolvation(parameter):
-    subcurFunction = lambda x, y: 2 * cos(x) / (1 - (sin(x) ** 2) * (cos(y) ** 2))
-    curFunction = lambda x, y: (4 / pi) * (1 - exp(-parameter * subcurFunction(x, y))) * cos(x) * sin(x)
-    return curFunction
+def Gauss(curFunction, end, start, num):
+    legArr = legendre(num)
+    output = 0
+    for i in range(num):
+        output += (start - end) / 2 * legArr[1][i] * curFunction((end + start) / 2 + (end - start) * legArr[0][i] / 2)
+    return output
 
 
 def Simpson(curFunction, start, end, num):
@@ -37,21 +39,8 @@ def Simpson(curFunction, start, end, num):
     output *= h / 3
     return output
 
-
 def toSingleTemp(twoParSolvation, imput):
     return lambda x: twoParSolvation(imput, x)
-
-
-def TempToX(parT, start, end):
-    return (end + start) / 2 + (end - start) * parT / 2
-
-
-def Gauss(curFunction, end, start, num):
-    legArr = legendre(num)
-    output = 0
-    for i in range(num):
-        output += (start - end) / 2 * legArr[1][i] * curFunction(TempToX(legArr[0][i], start, end))
-    return output
 
 
 def twoParTag(curFunction, limits, num, integrators):
@@ -59,11 +48,17 @@ def twoParTag(curFunction, limits, num, integrators):
     return integrators[0](interior, limits[0][0], limits[0][1], num[0])
 
 
+def toResolvation(parameter):
+    subcurFunction = lambda x, y: 2 * cos(x) / (1 - (sin(x) * sin(x)) * (cos(y) * cos(y)))
+    curFunction = lambda x, y: (4 / pi) * (1 - exp(-parameter * subcurFunction(x, y))) * cos(x) * sin(x)
+    return curFunction
+
+
 def main():
     parameter = int(input("Par: "))
     NSimpson = int(input("n(Simpson): "))
     MGauss = int(input("m(Gauss): "))
-    output = twoParTag(toResolvation(parameter), ((0, pi / 2), (0, pi / 2)), (NSimpson, MGauss), (Gauss, Gauss))
+    output = twoParTag(toResolvation(parameter), ((0, pi / 2), (0, pi / 2)), (NSimpson, MGauss), (Simpson, Gauss))
     print(output)
 
 
