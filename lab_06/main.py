@@ -21,6 +21,16 @@ def centerDerivative(yValues, xValues):
     return answer
 
 
+def diffSecondDerivative(yValues, xValues):
+    answer = ['-']
+
+    for i in range(1, len(yValues) - 1):
+        answer.append((yValues[i - 1] - 2 * yValues[i] + yValues[i + 1]))
+
+    answer.append('-')
+    return answer
+
+
 def main():
     yValues = table[1]
     xValues = table[0]
@@ -30,6 +40,12 @@ def main():
 
     secondColumn = centerDerivative(yValues, xValues)
     print("CenterDerivative:", secondColumn)
+
+    print()
+    print()
+
+    fifthColumn = diffSecondDerivative(yValues, xValues)
+    print("DiffSecondDerivative:", fifthColumn)
 
 
 main()
