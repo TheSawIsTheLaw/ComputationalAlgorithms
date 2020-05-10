@@ -17,8 +17,8 @@ def showTable():
     plot(xCoordinates, yCoordinates, c = "purple", label = "Epsilon(Tau)")
     legend()
     grid()
-    xlabel('Epsilon')
-    ylabel('Tau')
+    xlabel('Tau')
+    ylabel('Epsilon')
     show()
 
 
