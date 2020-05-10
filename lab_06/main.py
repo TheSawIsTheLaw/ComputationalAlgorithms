@@ -1,4 +1,6 @@
 table = [[1, 2, 3, 4, 5, 6], [0.571, 0.889, 1.091, 1.231, 1.333, 1.412]]
+
+tableTwo = [[1, 2, 3, 4], [1, 4.925, 12.514, 24.251]]
 # Абажаю хардкод)))))
 
 
@@ -31,9 +33,32 @@ def diffSecondDerivative(yValues):
     return answer
 
 
+def rungeDerivativeLeft(yValues):
+    answer = ['-', '-']
+
+    for i in range(2, len(yValues)):
+        fStepY = yValues[i] - yValues[i - 1]
+        sStepY = (yValues[i] - yValues[i - 2]) / 2
+        answer.append(fStepY + fStepY - sStepY)
+
+    return answer
+
+
+def rungeDerivativeRight(yValues):
+    answer = []
+
+    for i in range(len(yValues) - 2):
+        fStepY = yValues[i + 1] - yValues[i]
+        sStepY = (yValues[i + 2] - yValues[i]) / 2
+        answer.append(fStepY + fStepY - sStepY)
+
+    answer.append("-")
+    answer.append("-")
+    return answer
+
+
 def main():
     yValues = table[1]
-    xValues = table[0]
 
     firstColumn = leftSideDerivative(yValues)
     print("LeftSideDerivative:", firstColumn)
@@ -41,7 +66,11 @@ def main():
     secondColumn = centerDerivative(yValues)
     print("CenterDerivative:", secondColumn)
 
-    print()
+    thirdColumnRight = rungeDerivativeRight(yValues)
+    print("RungeDerivativeRight:", thirdColumnRight)
+
+    thirdColumnLeft = rungeDerivativeLeft(yValues)
+    print("RungeDerivativeLeft:", thirdColumnLeft)
     print()
 
     fifthColumn = diffSecondDerivative(yValues)
