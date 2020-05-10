@@ -57,6 +57,17 @@ def rungeDerivativeRight(yValues):
     return answer
 
 
+def varsDerivative(yValues, xValues):
+    result = []
+
+    for i in range(len(yValues) - 1):
+        curEtha = (1 / yValues[i] - 1 / yValues[i + 1]) / (1 / xValues[i] - 1 / xValues[i + 1])
+        result.append(yValues[i] * yValues[i] * curEtha / (xValues[i] * xValues[i]))
+
+    result.append('-')
+    return result
+
+
 def main():
     yValues = table[1]
     xValues = table[0]
@@ -72,7 +83,9 @@ def main():
 
     thirdColumnLeft = rungeDerivativeLeft(yValues)
     print("RungeDerivativeLeft:", thirdColumnLeft)
-    print()
+
+    fourthColumn = varsDerivative(yValues, xValues)
+    print("VarsDevirative:", fourthColumn)
 
     fifthColumn = diffSecondDerivative(yValues)
     print("DiffSecondDerivative:", fifthColumn)
