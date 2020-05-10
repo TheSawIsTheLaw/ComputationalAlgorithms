@@ -63,7 +63,7 @@ def main():
     parameter = int(input("Par: "))
     NSimpson = int(input("n(Simpson): "))
     MGauss = int(input("m(Gauss): "))
-    output = twoParTag(toResolvation(parameter), ((0, pi / 2), (0, pi / 2)), (NSimpson, MGauss), (Simpson, Gauss))
+    output = twoParTag(toResolvation(parameter), ((0, pi / 2), (0, pi / 2)), (NSimpson, MGauss), (Gauss, Gauss))
     print(output)
 
 
